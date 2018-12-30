@@ -1,26 +1,48 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Signer from './containers/Signer';
+import { Navbar, Grid, Row, Col } from 'react-bootstrap';
+import "./App.css";
+import "./bootstrap/css/bootstrap.css";
+import logo from './images/logo.png';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+
+      <Grid>
+        <Row>
+          <Col md={12}>
+
+              <header>
+                <Navbar>
+                  <Navbar.Header>
+                    <Navbar.Brand>
+                      <a href="https://marmo.network"><img className="logo" src={logo} /></a> Marmo Transaction 
+                    </Navbar.Brand>
+                  </Navbar.Header>
+                </Navbar>
+              </header>
+
+           </Col>
+        </Row>
+
+        <Row>
+          <Col md={12}>
+            <Signer />
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={12}>
+            <footer>
+              <hr />
+              <p className="text-center text-muted">
+                <a href="https://marmo.network">Copyright 2018 Marmo.</a>
+              </p>
+            </footer>
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }
