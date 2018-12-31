@@ -3,7 +3,7 @@ import { Form, FormGroup, FormControl, Button, Col, ControlLabel } from 'react-b
 
 import AccountInfo from "../components/AccountInfo";
 import TransactionData from "../components/TransactionData";
-import { getAddressFromPrivateKey } from "../txbuilder";
+import { getAddressFromPrivateKey, buildIntentTx } from "../txbuilder";
 
 
 /**
@@ -14,38 +14,40 @@ class Signer extends Component {
    // Define the state of the signing component
    state = {
     signer: "",
+    dependencies: "",
     contractAddress: "",
+    minGasLimit: "",
+    maxGasPrice: "",
+    expiration: "",
+    salt: "",
+    to: "",
+    value: "",
     functionSignature: "",
     functionParameters: "",
-    address: "",
     privateKey: "",
   };
 
-  // Refresh address data when the app is loaded
+  // Refresh signer data when the app is loaded
   componentDidMount() {
     this.updateAddressData();
   }
 
-  setAddressData = (address) => {
-    //this.state.address = address;
+  setAddressData = (signer) => {
     this.setState({
-      address
+      signer
     })
   }
 
   // Handle Send transaction button
-  sendTransaction = () => {
+  sendTransaction = (state) => {
 
-    console.log("TODO:");
-    // TODO:
+    let intent = buildIntentTx(state);
+    console.log(intent);
     
   }
 
   // Handle text changes in input fields
   onChange = (event) => {
-
-    console.log("state", this.state)
-
 
     let name = event.target.id;
     let value = event.target.value;
@@ -58,19 +60,23 @@ class Signer extends Component {
     console.log("Updated", name, value);
 
     // Store to survive refresh
-    window.localStorage.setItem(name, value);
+    // window.localStorage.setItem(name, value);
   }
 
   updateAddressData = (privateKey) => {
 
-    let address = getAddressFromPrivateKey(privateKey);
-    console.log("Address for private key", privateKey, "is", this.state.address);
+    if (privateKey === undefined) {
+      return;
+    }
 
-    if(!address) {
+    let signer = getAddressFromPrivateKey(privateKey);
+    console.log("Address for private key", privateKey, "is", this.state.signer);
+
+    if(!signer) {
       this.setAddressData("0x");
       return;
     } 
-    this.setAddressData(address);
+    this.setAddressData(signer);
   }
 
   // Handle private kery edit
@@ -86,15 +92,18 @@ class Signer extends Component {
 
         <h1>Build an intent transaction</h1>
 
-        <FormGroup controlId="signer">
+        <AccountInfo signer={this.state.signer} />
 
-        <Col componentClass={ControlLabel} sm={2}>
-          Signer address
-        </Col>
+        <FormGroup controlId="dependencies">
 
-        <Col sm={10}>
-          <FormControl id="signer" type="text" value={this.state.signer} onChange={this.onChange} />
-        </Col>
+          <Col componentClass={ControlLabel} sm={2}>
+            Dependencies
+          </Col>
+
+          <Col sm={10}>
+            <FormControl type="text" value={this.state.dependencies} onChange={this.onChange} />
+            <p className="text-muted">Comma separated list</p>
+          </Col>
 
         </FormGroup>
 
@@ -162,6 +171,18 @@ class Signer extends Component {
 
         </FormGroup>
 
+        <FormGroup controlId="salt">
+
+          <Col componentClass={ControlLabel} sm={2}>
+            Salt
+          </Col>
+
+          <Col sm={10}>
+            <FormControl type="text" value={this.state.salt} onChange={this.onChange} />
+          </Col>
+
+        </FormGroup>
+
         <FormGroup controlId="to">
 
           <Col componentClass={ControlLabel} sm={2}>
@@ -174,7 +195,7 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <FormGroup controlId="to">
+        <FormGroup controlId="value">
 
           <Col componentClass={ControlLabel} sm={2}>
             Value
@@ -211,11 +232,9 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <Button bsStyle="primary" onClick={this.sendTransaction}>Send intent</Button>
+        <Button bsStyle="primary" value={this.state} onClick={this.sendTransaction}>Send intent</Button>
 
         {this.state.rawTx && <TransactionData state={this.state} />}
-
-        <AccountInfo address={this.state.address} />
 
       </Form>
     );
