@@ -1,7 +1,6 @@
-import Wallet from "ethers-wallet";
-import {simpleEncode} from "ethereumjs-abi";
 import Web3 from "web3";
-
+import { IntentBuilder, IntentAction, MamorUtils } from "marmojs-sdk"
+ 
 const web3 = new Web3();
 
 /**
@@ -13,7 +12,7 @@ const web3 = new Web3();
  */
 export function getAddressFromPrivateKey(privateKey) {
   try {
-    let wallet = web3.eth.accounts.privateKeyToAccount(privateKey)//new Wallet(privateKey);
+    let wallet = web3.eth.accounts.privateKeyToAccount(privateKey);
     return wallet.address;
   } catch (e) {
     console.error("Could not parse private key ", privateKey, e);
@@ -22,32 +21,28 @@ export function getAddressFromPrivateKey(privateKey) {
 }
 
 /**
- * Create data field based on smart contract function signature and arguments.
- *
- * @param functionSignature E.g. setValue(uint256)
- * @param functionParameters E.g. A comma separated string. Eg. 200,300
- * @returns {string} 0x prefixed hex string
- */
-export function encodeDataPayload(functionSignature, functionParameters) {
-
-  if(typeof functionSignature != "string") {
-    throw new Error("Bad function signature: " + functionSignature);
-  }
-
-  if(typeof functionParameters != "string") {
-    throw new Error("Bad function parameter: " + functionSignature);
-  }
-
-  const params = functionParameters.split(",").filter((x) => x.trim());
-  const signatureArgs = [functionSignature].concat(params);
-  return "0x" + simpleEncode.apply(this, signatureArgs).toString("hex");
-}
-
-/**
- * Build a raw transaction calling a contract function.
+ * Build a raw transaction calling a marmojs-sdk.
  *
  */
-export function buildTx({}) {
+export function buildIntentTx({ signer, dependencies, contractAddress, minGasLimit, maxGasPrice, expiration, salt, to, value, functionSignature, functionParameters }) {
 
-  // TODO: call marmojs-sdk
+  let intentAction = new IntentAction();
+  intent.setTo(to);
+  intent.setValue(value);
+  intent.setData(MamorUtils.encodeDataPayload(functionSignature, functionParameters));
+
+  let intentBuilder = new IntentBuilder();
+  intentBuilder.withSigner(signer)
+    .withDependencies(dependencies.split(",").filter((x) => x.trim()))
+    .withWallet(contractAddress)
+    .withIntentAction(intentAction)
+    .withMinGasLimit(minGasLimit)
+    .withMaxGasLimit(maxGasPrice)
+    .withExpiration(expiration)
+    .withSalt(salt);
+
+
+  let intent = intentBuilder.build();
+  return intent;
+
 }
