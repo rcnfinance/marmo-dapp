@@ -15,12 +15,11 @@ class Signer extends Component {
    state = {
     signer: "",
     dependencies: "",
-    contractAddress: "",
     minGasLimit: "",
     maxGasPrice: "",
     expiration: "",
     salt: "",
-    to: "",
+    tokenContractAddress: "",
     value: "",
     functionSignature: "",
     functionParameters: "",
@@ -41,7 +40,8 @@ class Signer extends Component {
   // Handle Send transaction button
   sendTransaction = (state) => {
 
-    let intent = buildIntentTx(state);
+    console.log(this.state);
+    let intent = buildIntentTx(this.state);
     console.log(intent);
     
   }
@@ -123,18 +123,6 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <FormGroup controlId="contractAddress">
-
-          <Col componentClass={ControlLabel} sm={2}>
-            Contract address (Marmo contract address) 
-          </Col>
-
-          <Col sm={10}>
-            <FormControl type="text" value={this.state.contractAddress} onChange={this.onChange} />
-          </Col>
-
-        </FormGroup>
-
         <FormGroup controlId="minGasLimit">
 
           <Col componentClass={ControlLabel} sm={2}>
@@ -183,14 +171,14 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <FormGroup controlId="to">
+        <FormGroup controlId="tokenContractAddress">
 
           <Col componentClass={ControlLabel} sm={2}>
-            To
+          Token Contract Address
           </Col>
 
           <Col sm={10}>
-            <FormControl type="text" value={this.state.to} onChange={this.onChange} />
+            <FormControl type="text" value={this.state.tokenContractAddress} onChange={this.onChange} />
           </Col>
 
         </FormGroup>
