@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { IntentBuilder, IntentAction, MamorUtils } from "marmojs-sdk"
+import { IntentBuilder, IntentAction, encodeDataPayload } from "marmojs-sdk"
  
 const web3 = new Web3();
 
@@ -24,25 +24,44 @@ export function getAddressFromPrivateKey(privateKey) {
  * Build a raw transaction calling a marmojs-sdk.
  *
  */
-export function buildIntentTx({ signer, dependencies, contractAddress, minGasLimit, maxGasPrice, expiration, salt, to, value, functionSignature, functionParameters }) {
+export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, tokenContractAddress, value, functionSignature, functionParameters }) {
 
   let intentAction = new IntentAction();
-  intent.setTo(to);
-  intent.setValue(value);
-  intent.setData(MamorUtils.encodeDataPayload(functionSignature, functionParameters));
+  if (tokenContractAddress !== undefined) {
+    intentAction.setTo(tokenContractAddress);
+  }
+  if (value !== undefined) {
+    intentAction.setValue(value);
+  }
+  if(functionSignature!==null && functionParameters!== null) {
+    intentAction.setData(encodeDataPayload(functionSignature, functionParameters));
+  }
 
   let intentBuilder = new IntentBuilder();
-  intentBuilder.withSigner(signer)
-    .withDependencies(dependencies.split(",").filter((x) => x.trim()))
-    .withWallet(contractAddress)
-    .withIntentAction(intentAction)
-    .withMinGasLimit(minGasLimit)
-    .withMaxGasLimit(maxGasPrice)
-    .withExpiration(expiration)
-    .withSalt(salt);
+  if (signer !== undefined) {
+    intentBuilder.withSigner(signer);
+  }
+  if (dependencies !== undefined) {
+    let splitDependencies = dependencies.split(",").filter((x) => x.trim());
+    intentBuilder.withDependencies(splitDependencies)
+  }
+  intentBuilder.withIntentAction(intentAction)
+  if (minGasLimit !== undefined) {
+    intentBuilder.withMinGasLimit(minGasLimit)
+  }
+  if (maxGasPrice !== undefined) {
+    intentBuilder.withMaxGasLimit(maxGasPrice)
+  }
+  if (expiration !== undefined) {
+    intentBuilder.withExpiration(expiration)
+  }
+  if (salt !== undefined) {
+    intentBuilder.withSalt(salt);
+  }
 
 
   let intent = intentBuilder.build();
+  console.log()
   return intent;
 
 }
