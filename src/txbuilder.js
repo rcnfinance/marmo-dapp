@@ -27,41 +27,36 @@ export function getAddressFromPrivateKey(privateKey) {
 export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, tokenContractAddress, value, functionSignature, functionParameters }) {
 
   let intentAction = new IntentAction();
-  if (tokenContractAddress !== undefined) {
+  if (tokenContractAddress !== '') {
     intentAction.setTo(tokenContractAddress);
   }
-  if (value !== undefined) {
+  if (value !== '') {
     intentAction.setValue(value);
   }
-  if(functionSignature!==null && functionParameters!== null) {
+  if(functionSignature !== '' && functionParameters !== '') {
     intentAction.setData(encodeDataPayload(functionSignature, functionParameters));
   }
-
   let intentBuilder = new IntentBuilder();
-  if (signer !== undefined) {
+  if (signer !== '') {
     intentBuilder.withSigner(signer);
   }
-  if (dependencies !== undefined) {
+  if (dependencies !== '') {
     let splitDependencies = dependencies.split(",").filter((x) => x.trim());
     intentBuilder.withDependencies(splitDependencies)
   }
   intentBuilder.withIntentAction(intentAction)
-  if (minGasLimit !== undefined) {
+  if (minGasLimit !== '') {
     intentBuilder.withMinGasLimit(minGasLimit)
   }
-  if (maxGasPrice !== undefined) {
+  if (maxGasPrice !== '') {
     intentBuilder.withMaxGasLimit(maxGasPrice)
   }
-  if (expiration !== undefined) {
+  if (expiration !== '') {
     intentBuilder.withExpiration(expiration)
   }
-  if (salt !== undefined) {
+  if (salt !== '') {
     intentBuilder.withSalt(salt);
   }
-
-
-  let intent = intentBuilder.build();
-  console.log()
-  return intent;
+  return intentBuilder.build();
 
 }
