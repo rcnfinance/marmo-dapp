@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, FormGroup, FormControl, Button, Col, ControlLabel } from 'react-bootstrap';
 
 import AccountInfo from "../components/AccountInfo";
-import TransactionData from "../components/TransactionData";
+import Stringify from 'react-stringify'
 import { getAddressFromPrivateKey, buildIntentTx } from "../txbuilder";
 
 
@@ -24,7 +24,24 @@ class Signer extends Component {
     functionSignature: "",
     functionParameters: "",
     privateKey: "",
+    intent: ""
   };
+  /* FOR TEST
+  state = {
+    signer: "",
+    dependencies: "0xee2e1b62b008e27a5a3d66352f87e760ed85e723b6834e622f38b626090f536e,0x6b67aac6eda8798297b1591da36a215bfbe1fed666c4676faf5a214d54e9e928",
+    minGasLimit: "999999",
+    maxGasPrice: "300000",
+    expiration: "15",
+    salt: "1",
+    tokenContractAddress: "0x2f45b6fb2f28a73f110400386da31044b2e953d4",
+    value: "0",
+    functionSignature: "balanceOf(string)",
+    functionParameters: "0x7F5EB5bB5cF88cfcEe9613368636f458800e62CB",
+    privateKey: "0x512850c7ebe3e1ade1d0f28ef6eebdd3ba4e78748e0682f8fda6fc2c2c5b334a",
+    intent: ""
+  };
+  */
 
   // Refresh signer data when the app is loaded
   componentDidMount() {
@@ -38,12 +55,25 @@ class Signer extends Component {
   }
 
   // Handle Send transaction button
-  sendTransaction = (state) => {
+  sendTransaction = () => {
 
-    console.log(this.state);
-    let intent = buildIntentTx(this.state);
-    console.log(intent);
-    
+  }
+
+  // Handle Build transaction button
+  buildTransaction = () => {
+    this.intent = buildIntentTx(this.state);
+    this.updateIntentData(this.intent);
+  }
+
+  setIntentData = (value) => {
+    let intent = JSON.stringify(value);
+    this.setState({
+      intent
+    })
+  }
+
+  updateIntentData = (intent) => {
+    this.setIntentData(intent);
   }
 
   // Handle text changes in input fields
@@ -220,9 +250,25 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <Button bsStyle="primary" value={this.state} onClick={this.sendTransaction}>Send intent</Button>
+        <Button bsStyle="primary" onClick={this.buildTransaction}>Build Intent</Button>
 
-        {this.state.rawTx && <TransactionData state={this.state} />}
+        <div>
+        <hr />
+
+        <h3>Transaction data</h3>
+
+        <FormGroup controlId="rawTx">
+
+          <Col componentClass={ControlLabel} sm={2}>
+            Raw transaction
+          </Col>
+          <Stringify value={this.intent} space=" " />
+
+        </FormGroup>
+
+        <Button bsStyle="primary" onClick={this.sendTransaction}>Send Intent</Button>
+        
+      </div>
 
       </Form>
     );
