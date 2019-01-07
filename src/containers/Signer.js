@@ -4,6 +4,7 @@ import { Form, FormGroup, FormControl, Button, Col, ControlLabel } from 'react-b
 import AccountInfo from "../components/AccountInfo";
 import Stringify from 'react-stringify'
 import { getAddressFromPrivateKey, buildIntentTx, signIntentTx, transform } from "../txbuilder";
+import { RelayClient } from "marmojs-sdk"
 
 
 /**
@@ -12,7 +13,7 @@ import { getAddressFromPrivateKey, buildIntentTx, signIntentTx, transform } from
 class Signer extends Component {
 
    // Define the state of the signing component
-   
+  
    state = {
     signer: "",
     dependencies: "",
@@ -25,7 +26,9 @@ class Signer extends Component {
     functionSignature: "",
     functionParameters: "",
     privateKey: "",
-    intent: ""
+    signedIntent: undefined,
+    intent: undefined,
+    url: ""
   };
   /* FOR TEST
   state = {
@@ -40,10 +43,12 @@ class Signer extends Component {
     functionSignature: "balanceOf(string)",
     functionParameters: "0x7F5EB5bB5cF88cfcEe9613368636f458800e62CB",
     privateKey: "0x512850c7ebe3e1ade1d0f28ef6eebdd3ba4e78748e0682f8fda6fc2c2c5b334a",
-    intent: undefined
-  };
-  */
- 
+    signedIntent: undefined,
+    intent: undefined,
+    url: "http://localhost:8080/relay"
+  };*/
+
+
   // Refresh signer data when the app is loaded
   componentDidMount() {
     this.updateAddressData();
@@ -57,7 +62,9 @@ class Signer extends Component {
 
   // Handle Send transaction button
   sendTransaction = () => {
-
+    console.log(this.state.url);
+    let client = new RelayClient(this.state.url);
+    client.post(this.state.signedIntent);
   }
 
   // Handle Build transaction button
@@ -67,9 +74,10 @@ class Signer extends Component {
     this.setIntentData(signedIntent);
   }
 
-  setIntentData = (value) => {
-    let intent = transform(value);
+  setIntentData = (signedIntent) => {
+    let intent = transform(signedIntent);
     this.setState({
+      signedIntent,
       intent
     })
   }
@@ -263,6 +271,20 @@ class Signer extends Component {
           <Stringify value={this.state.intent} space=" " />
 
         </FormGroup>
+        
+        <hr />
+
+        <FormGroup controlId="url">
+
+          <Col componentClass={ControlLabel} sm={2}>
+            URL relayer
+          </Col>
+
+          <Col sm={10}>
+            <FormControl type="text" value={this.state.url} onChange={this.onChange} />
+          </Col>
+
+          </FormGroup>
 
         <Button bsStyle="primary" onClick={this.sendTransaction}>Send Intent</Button>
         
