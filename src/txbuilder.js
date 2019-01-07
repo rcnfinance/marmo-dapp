@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { IntentBuilder, IntentAction, encodeDataPayload } from "marmojs-sdk"
+import { IntentBuilder, IntentAction, encodeDataPayload, sign, transformSignedIntent } from "marmojs-sdk"
  
 const web3 = new Web3();
 
@@ -22,10 +22,8 @@ export function getAddressFromPrivateKey(privateKey) {
 
 /**
  * Build a raw transaction calling a marmojs-sdk.
- *
  */
 export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, tokenContractAddress, value, functionSignature, functionParameters }) {
-
   let intentAction = new IntentAction();
   if (tokenContractAddress !== '') {
     intentAction.setTo(tokenContractAddress);
@@ -58,5 +56,16 @@ export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, 
     intentBuilder.withSalt(salt);
   }
   return intentBuilder.build();
+}
 
+/**
+ * Sign a raw transaction calling a marmojs-sdk.
+ */
+export function signIntentTx(intent, privateKey) {
+  return sign(intent, privateKey);
+}
+
+export function stringify(signedIntent) {
+  console.log(signedIntent);
+  return transformSignedIntent(signedIntent)
 }
