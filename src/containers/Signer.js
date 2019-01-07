@@ -14,6 +14,7 @@ class Signer extends Component {
 
    // Define the state of the signing component
   
+   /* FOR TEST
    state = {
     signer: "",
     dependencies: "",
@@ -21,7 +22,7 @@ class Signer extends Component {
     maxGasPrice: "",
     expiration: "",
     salt: "",
-    tokenContractAddress: "",
+    to: "",
     value: "",
     functionSignature: "",
     functionParameters: "",
@@ -29,8 +30,8 @@ class Signer extends Component {
     signedIntent: undefined,
     intent: undefined,
     url: ""
-  };
-  /* FOR TEST
+  };*/
+  
   state = {
     signer: "",
     dependencies: "0xee2e1b62b008e27a5a3d66352f87e760ed85e723b6834e622f38b626090f536e,0x6b67aac6eda8798297b1591da36a215bfbe1fed666c4676faf5a214d54e9e928",
@@ -38,7 +39,7 @@ class Signer extends Component {
     maxGasPrice: "300000",
     expiration: "15",
     salt: "1",
-    tokenContractAddress: "0x2f45b6fb2f28a73f110400386da31044b2e953d4",
+    to: "0x2f45b6fb2f28a73f110400386da31044b2e953d4",
     value: "0",
     functionSignature: "balanceOf(string)",
     functionParameters: "0x7F5EB5bB5cF88cfcEe9613368636f458800e62CB",
@@ -46,7 +47,7 @@ class Signer extends Component {
     signedIntent: undefined,
     intent: undefined,
     url: "http://localhost:8080/relay"
-  };*/
+  };
 
 
   // Refresh signer data when the app is loaded
@@ -207,14 +208,14 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <FormGroup controlId="tokenContractAddress">
+        <FormGroup controlId="to">
 
           <Col componentClass={ControlLabel} sm={2}>
-          Token Contract Address
+          To
           </Col>
 
           <Col sm={10}>
-            <FormControl type="text" value={this.state.tokenContractAddress} onChange={this.onChange} />
+            <FormControl type="text" value={this.state.to} onChange={this.onChange} />
           </Col>
 
         </FormGroup>

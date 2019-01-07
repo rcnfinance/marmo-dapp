@@ -23,10 +23,11 @@ export function getAddressFromPrivateKey(privateKey) {
 /**
  * Build a raw transaction calling a marmojs-sdk.
  */
-export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, tokenContractAddress, value, functionSignature, functionParameters }) {
+export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, to, value, functionSignature, functionParameters }) {
   let intentAction = new IntentAction();
-  if (tokenContractAddress !== '') {
-    intentAction.setTo(tokenContractAddress);
+  if (to !== '') {
+    console.log(to)
+    intentAction.setTo(to);
   }
   if (value !== '') {
     intentAction.setValue(value);
@@ -38,10 +39,11 @@ export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, 
   if (signer !== '') {
     intentBuilder.withSigner(signer);
   }
+  let splitDependencies = []
   if (dependencies !== '') {
-    let splitDependencies = dependencies.split(",").filter((x) => x.trim());
-    intentBuilder.withDependencies(splitDependencies)
+    splitDependencies = dependencies.split(",").filter((x) => x.trim());
   }
+  intentBuilder.withDependencies(splitDependencies)
   intentBuilder.withIntentAction(intentAction)
   if (minGasLimit !== '') {
     intentBuilder.withMinGasLimit(minGasLimit)
