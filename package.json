@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "ethereumjs-abi": "^0.6.5",
-    "marmojs-sdk": "^0.1.20",
+    "marmojs-sdk": "^0.1.21",
     "react": "^16.7.0",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.7.0",
