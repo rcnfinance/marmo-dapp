@@ -3,7 +3,7 @@ import { Form, FormGroup, FormControl, Button, Col, ControlLabel } from 'react-b
 
 import AccountInfo from "../components/AccountInfo";
 import Stringify from 'react-stringify'
-import { getAddressFromPrivateKey, buildIntentTx } from "../txbuilder";
+import { getAddressFromPrivateKey, buildIntentTx, signIntentTx, transform } from "../txbuilder";
 
 
 /**
@@ -12,6 +12,7 @@ import { getAddressFromPrivateKey, buildIntentTx } from "../txbuilder";
 class Signer extends Component {
 
    // Define the state of the signing component
+   
    state = {
     signer: "",
     dependencies: "",
@@ -39,10 +40,10 @@ class Signer extends Component {
     functionSignature: "balanceOf(string)",
     functionParameters: "0x7F5EB5bB5cF88cfcEe9613368636f458800e62CB",
     privateKey: "0x512850c7ebe3e1ade1d0f28ef6eebdd3ba4e78748e0682f8fda6fc2c2c5b334a",
-    intent: ""
+    intent: undefined
   };
   */
-
+ 
   // Refresh signer data when the app is loaded
   componentDidMount() {
     this.updateAddressData();
@@ -61,19 +62,16 @@ class Signer extends Component {
 
   // Handle Build transaction button
   buildTransaction = () => {
-    this.intent = buildIntentTx(this.state);
-    this.updateIntentData(this.intent);
+    let intent = buildIntentTx(this.state);
+    let signedIntent = signIntentTx(intent, this.state.privateKey);
+    this.setIntentData(signedIntent);
   }
 
   setIntentData = (value) => {
-    let intent = JSON.stringify(value);
+    let intent = transform(value);
     this.setState({
       intent
     })
-  }
-
-  updateIntentData = (intent) => {
-    this.setIntentData(intent);
   }
 
   // Handle text changes in input fields
@@ -95,7 +93,7 @@ class Signer extends Component {
 
   updateAddressData = (privateKey) => {
 
-    if (privateKey === undefined) {
+    if (privateKey === undefined || privateKey.length !== 66 /* PRIVATEKEY_SIZE */) {
       return;
     }
 
@@ -262,7 +260,7 @@ class Signer extends Component {
           <Col componentClass={ControlLabel} sm={2}>
             Raw transaction
           </Col>
-          <Stringify value={this.intent} space=" " />
+          <Stringify value={this.state.intent} space=" " />
 
         </FormGroup>
 

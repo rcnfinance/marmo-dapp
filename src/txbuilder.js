@@ -65,7 +65,6 @@ export function signIntentTx(intent, privateKey) {
   return sign(intent, privateKey);
 }
 
-export function stringify(signedIntent) {
-  console.log(signedIntent);
+export function transform(signedIntent) {
   return transformSignedIntent(signedIntent)
 }
