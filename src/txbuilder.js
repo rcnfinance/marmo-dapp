@@ -26,7 +26,6 @@ export function getAddressFromPrivateKey(privateKey) {
 export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, to, value, functionSignature, functionParameters }) {
   let intentAction = new IntentAction();
   if (to !== '') {
-    console.log(to)
     intentAction.setTo(to);
   }
   if (value !== '') {
