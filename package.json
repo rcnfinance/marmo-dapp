@@ -4,13 +4,14 @@
   "private": true,
   "dependencies": {
     "ethereumjs-abi": "^0.6.5",
-    "marmojs-sdk": "^0.1.29",
+    "marmojs-sdk": "^0.1.31",
     "react": "^16.7.0",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.2",
     "react-stringify": "^1.0.0",
-    "web3": "^1.0.0-beta.37"
+    "web3": "^1.0.0-beta.37",
+    "web3-providers-ws": "^1.0.0-beta.37"
   },
   "scripts": {
     "start": "react-scripts start",
