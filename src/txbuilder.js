@@ -1,7 +1,9 @@
 import Web3 from "web3";
-import { IntentBuilder, IntentAction, encodeDataPayload, sign, transformSignedIntent } from "marmojs-sdk"
- 
+import { Wallet, IntentBuilder, IntentAction, DefaultConf } from "marmojs"
+import { simpleEncode } from "ethereumjs-abi"
+
 const web3 = new Web3();
+const PREFIX = "0x";
 
 /**
  * Get an Ethereum public address from a private key.
@@ -21,34 +23,45 @@ export function getAddressFromPrivateKey(privateKey) {
 }
 
 /**
+ * Create data field based on smart contract function signature and arguments.
+ *
+ * @param functionSignature E.g. setName(string)
+ * @param functionParameters E.g. A comma separated string. Eg. joaquin
+ * @returns {string} 0x prefixed hex string
+ */
+export function encodeDataPayload(functionSignature, functionParameters) {
+  const params = functionParameters.split(",").filter((x) => x.trim());
+  const signatureArgs = [functionSignature].concat(params);
+  return PREFIX + simpleEncode.apply(this, signatureArgs).toString("hex");
+}
+
+/**
  * Build a raw transaction calling a marmojs-sdk.
  */
-export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, expiration, salt, to, value, functionSignature, functionParameters }) {
+export function buildIntentTx({ dependencies, maxGasLimit, maxGasPrice, expiration, salt, to, value, functionSignature, functionParameters }) {
+  DefaultConf.ROPSTEN.asDefault();
   let intentAction = new IntentAction();
   if (to !== '') {
-    intentAction.setTo(to);
+    intentAction.to = to;
   }
   if (value !== '') {
-    intentAction.setValue(value);
+    intentAction.value = value;
   }
   if(functionSignature !== '' && functionParameters !== '') {
-    intentAction.setData(encodeDataPayload(functionSignature, functionParameters));
+    intentAction.data = encodeDataPayload(functionSignature, functionParameters);
   }
   let intentBuilder = new IntentBuilder();
-  if (signer !== '') {
-    intentBuilder.withSigner(signer);
-  }
-  let splitDependencies = []
+  /*let splitDependencies = []
   if (dependencies !== '') {
     splitDependencies = dependencies.split(",").filter((x) => x.trim());
   }
-  intentBuilder.withDependencies(splitDependencies)
+  intentBuilder.withDependencies(splitDependencies)*/
   intentBuilder.withIntentAction(intentAction)
-  if (minGasLimit !== '') {
-    intentBuilder.withMinGasLimit(minGasLimit)
+  if (maxGasLimit !== '') {
+    intentBuilder.withMaxGasLimit(maxGasLimit)
   }
   if (maxGasPrice !== '') {
-    intentBuilder.withMaxGasLimit(maxGasPrice)
+    intentBuilder.withMaxGasPrice(maxGasPrice)
   }
   if (expiration !== '') {
     intentBuilder.withExpiration(expiration)
@@ -63,9 +76,7 @@ export function buildIntentTx({ signer, dependencies, minGasLimit, maxGasPrice, 
  * Sign a raw transaction calling a marmojs-sdk.
  */
 export function signIntentTx(intent, privateKey) {
-  return sign(intent, privateKey);
-}
-
-export function transform(signedIntent) {
-  return transformSignedIntent(signedIntent)
+  const wallet = new Wallet(privateKey);
+  const signedIntent = wallet.sign(intent);
+  return signedIntent;
 }

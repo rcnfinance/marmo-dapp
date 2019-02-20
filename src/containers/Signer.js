@@ -3,8 +3,8 @@ import { Form, FormGroup, FormControl, Button, Col, ControlLabel } from 'react-b
 
 import AccountInfo from "../components/AccountInfo";
 import Stringify from 'react-stringify'
-import { getAddressFromPrivateKey, buildIntentTx, signIntentTx, transform } from "../txbuilder";
-import { RelayClient } from "marmojs-sdk"
+import { getAddressFromPrivateKey, buildIntentTx, signIntentTx } from "../txbuilder";
+import { RelayClient } from "marmojs"
 
 
 /**
@@ -18,7 +18,7 @@ class Signer extends Component {
    state = {
     signer: "",
     dependencies: "",
-    minGasLimit: "",
+    maxGasLimit: "",
     maxGasPrice: "",
     expiration: "",
     salt: "",
@@ -33,20 +33,20 @@ class Signer extends Component {
   };*/
   
   state = {
-    signer: "",
-    dependencies: "0xee2e1b62b008e27a5a3d66352f87e760ed85e723b6834e622f38b626090f536e,0x6b67aac6eda8798297b1591da36a215bfbe1fed666c4676faf5a214d54e9e928",
-    minGasLimit: "999999",
-    maxGasPrice: "300000",
-    expiration: "15",
-    salt: "1",
+    signer: "0x9d7713f5048c270d7c1dBe65F44644F4eA47f774",
+    dependencies: "",
+    maxGasLimit: "1",
+    maxGasPrice: "9999999",
+    expiration: "1578423013",
+    salt: "0x0000000000000000000000000000000000000000000000000000000000000000",
     to: "0x2f45b6fb2f28a73f110400386da31044b2e953d4",
     value: "0",
-    functionSignature: "balanceOf(string)",
-    functionParameters: "0x7F5EB5bB5cF88cfcEe9613368636f458800e62CB",
+    functionSignature: "transfer(address,uint)",
+    functionParameters: "0x9d7713f5048c270d7c1dBe65F44644F4eA47f774, 0",
     privateKey: "0x512850c7ebe3e1ade1d0f28ef6eebdd3ba4e78748e0682f8fda6fc2c2c5b334a",
     signedIntent: undefined,
     intent: undefined,
-    url: "http://localhost:8080/relay"
+    url: "http://ec2-3-16-29-215.us-east-2.compute.amazonaws.com/relay"
   };
 
 
@@ -72,11 +72,11 @@ class Signer extends Component {
   buildTransaction = () => {
     let intent = buildIntentTx(this.state);
     let signedIntent = signIntentTx(intent, this.state.privateKey);
-    this.setIntentData(signedIntent);
+    console.log(signedIntent);
+    this.setIntentData(intent, signedIntent);
   }
 
-  setIntentData = (signedIntent) => {
-    let intent = transform(signedIntent);
+  setIntentData = (intent, signedIntent) => {
     this.setState({
       signedIntent,
       intent
@@ -96,8 +96,6 @@ class Signer extends Component {
     });
     console.log("Updated", name, value);
 
-    // Store to survive refresh
-    // window.localStorage.setItem(name, value);
   }
 
   updateAddressData = (privateKey) => {
@@ -160,14 +158,14 @@ class Signer extends Component {
 
         </FormGroup>
 
-        <FormGroup controlId="minGasLimit">
+        <FormGroup controlId="maxGasLimit">
 
           <Col componentClass={ControlLabel} sm={2}>
             Min gas limit (Optional) 
           </Col>
 
           <Col sm={10}>
-            <FormControl type="text" value={this.state.minGasLimit} onChange={this.onChange} />
+            <FormControl type="text" value={this.state.maxGasLimit} onChange={this.onChange} />
           </Col>
 
         </FormGroup>
